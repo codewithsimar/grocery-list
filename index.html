@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grocery (Web Design Project)</title>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --white: #fff;
+      --accent: #3b82f6;
+      --high: #ef4444;
+      --medium: #f59e0b;
+      --low: #10b981;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: #111;
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--white);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+    }
+
+    header button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .board {
+      display: flex;
+      gap: 1rem;
+      padding: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .column {
+      flex: 1 1 300px;
+      background: var(--white);
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .column h2 {
+      margin-bottom: 1rem;
+      font-size: 1.4rem;
+    }
+
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      min-height: 50px;
+    }
+
+    .task {
+      background: var(--white);
+      padding: 0.75rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      cursor: grab;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 1000;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--white);
+      padding: 2rem;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-content h3 {
+      margin-bottom: 1rem;
+    }
+
+    .modal-content form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .modal-content input,
+    .modal-content textarea,
+    .modal-content select {
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+    }
+
+    .modal-actions button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .modal-actions button[type="submit"] {
+      background: var(--accent);
+      color: white;
+    }
+
+    .modal-actions button#closeModal {
+      background: #e5e7eb;
+    }
+
+    @media(max-width: 768px) {
+      .board {
+        flex-direction: column;
+      }
+    }
+
+    .credits {
+      text-align: center;
+      color: rgb(0, 0, 0);
+      font-size: 1.5rem;
+      line-height: 1.8;
+      background-size: 400% 400%;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+    }
+
+    @keyframes gradientAnimation {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    .credits span {
+      display: block;
+      margin: 10px 0;
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header>
+      <h1>Grocery (Web Design Project)</h1>
+      <button id="addTaskBtn">+ New Item</button>
+    </header>
+
+    <main>
+      <div class="board">
+        <div class="column" data-status="to-buy">
+          <h2>To Buy</h2>
+          <div class="task-list" id="to-buy"></div>
+        </div>
+        <div class="column" data-status="in-cart">
+          <h2>In Cart</h2>
+          <div class="task-list" id="in-cart"></div>
+        </div>
+        <div class="column" data-status="purchased">
+          <h2>Purchased</h2>
+          <div class="task-list" id="purchased"></div>
+        </div>
+      </div>
+      <div class="credits">
+        <span>This web designing project is developed by:</span>
+        <span>Harsimar Singh (24BCA10047)</span>
+        <span>Arshdeep Kaur (24BCA10056)</span>
+        <span>Harsh Wardhan (24BCA10062)</span>
+        <span>Vedika (24BCA10059)</span>
+      </div>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal" id="taskModal">
+      <div class="modal-content">
+        <h3>Add New Item</h3>
+        <form id="taskForm">
+          <input type="text" id="title" placeholder="Item Name" required />
+          <textarea id="description" placeholder="Details or quantity" required></textarea>
+          <input type="date" id="dueDate" required />
+          <select id="priority">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+          </select>
+          <div class="modal-actions">
+            <button type="submit">Add</button>
+            <button type="button" id="closeModal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
